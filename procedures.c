@@ -131,3 +131,46 @@ void Suppression_logique(char* c, char* nomfichier) {
         printf("L’élément n’existe pas !\n");
     }
 }
+void insertion(Fichier *f, Enregistrement nouvelElement) {
+    // Variables pour suivre la position d'insertion
+    int blocActuel = f->entete.premierBloc;
+    int position = f->entete.premierePositionLibre;
+
+    while (true) {
+        Tbloc buffer;
+        lireDir(f, blocActuel, &buffer);
+
+        // Vérifier s'il y a de la place dans le bloc actuel pour l'enregistrement
+        if (position + nouvelElement.taille + TAILLE_EN_TETE_ENREG <= TAILLE_BLOC) {
+            // Insérer l'enregistrement dans le bloc actuel
+            buffer.tab[position] = nouvelElement.taille;
+            buffer.tab[position + 1] = nouvelElement.efface;
+            snprintf(&buffer.tab[position + 2], sizeof(nouvelElement.cle), "%s", nouvelElement.cle);
+            snprintf(&buffer.tab[position + 22], nouvelElement.taille - TAILLE_EN_TETE_ENREG, "%s", nouvelElement.info);
+
+            // Mettre à jour l'en-tête du fichier
+            f->entete.premierePositionLibre = position + nouvelElement.taille;
+            ecrireDir(f, blocActuel, &buffer);
+            fermer(f);
+            return; // Insertion réussie, sortie de la fonction
+        } else {
+            // Le bloc actuel est plein, passer au bloc suivant s'il existe
+            if (buffer.suivant != 0) {
+                blocActuel = buffer.suivant;
+                position = 0;
+            } else {
+                // Créer un nouveau bloc s'il n'y a pas de bloc suivant
+                int nouveauBloc = allouerNouveauBloc(f);
+                buffer.suivant = nouveauBloc;
+                ecrireDir(f, blocActuel, &buffer);
+                blocActuel = nouveauBloc;
+                position = 0;
+            }
+        }
+    }
+}
+
+// Fonction pour allouer un nouveau bloc et renvoyer son numéro
+int allouerNouveauBloc(Fichier *f) {
+    // ... (logique pour allouer un nouveau bloc, mise à jour des en-têtes)
+}
