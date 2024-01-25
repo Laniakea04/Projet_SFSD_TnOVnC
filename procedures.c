@@ -23,7 +23,6 @@ void ecrireDir(Fichier *f,int N_Bloc,Tbloc *buffer)
         fwrite(buffer, 1, sizeof(Tbloc), f->fichier);
     }
 }
-/*-------------------------essay de fonction ouvrir-----------------------------------*/
 
 
 // Fonction pour ouvrir un fichier
