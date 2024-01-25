@@ -44,26 +44,33 @@ typedef struct {
     Bloc buffer; // Tampon pour un bloc
 } Fichier;
 
-
 int main() {
-    char nomFichier[] = "monFichier.txt";
-
-    // Créer un nouveau fichier
-    Fichier* f = ouvrir(nomFichier, 'N');
+    // Créer un nouveau fichier (ou l'ouvrir s'il existe déjà)
+    Fichier* f = ouvrir("monFichier.txt", 'A');
     if (f == NULL) {
-        printf("Erreur lors de la création du fichier.\n");
+        printf("Erreur lors de l'ouverture du fichier.\n");
         return 1;
     }
 
-    // Exemple de structure d'enregistrement à insérer
-    Enregistrement nouvelElement;
-    nouvelElement.taille = 15; // Taille de la chaîne d'informations
-    nouvelElement.efface = 'F'; // Marqueur de suppression logique
-    snprintf(nouvelElement.cle, sizeof(nouvelElement.cle), "%s", "nouvelleCle");
-    snprintf(nouvelElement.info, sizeof(nouvelElement.info), "%s", "NouvellesInfos123");
+    // Rechercher un enregistrement
+    int cleRecherche = 123;
+    bool trouve;
+    int bloc, position;
+    Recherche(cleRecherche, "monFichier.txt", &trouve, &bloc, &position);
 
-    // Appel de la fonction d'insertion
+    if (trouve) {
+        printf("L'enregistrement avec la clé %d a été trouvé dans le bloc %d à la position %d.\n", cleRecherche, bloc, position);
+    } else {
+        printf("L'enregistrement avec la clé %d n'a pas été trouvé.\n", cleRecherche);
+    }
+
+    // Insérer un nouvel enregistrement
+    Enregistrement nouvelElement;
+    // Initialisez les champs de nouvelElement selon besoins
     insertion(f, nouvelElement);
+
+    // Marquer un enregistrement comme supprimé
+    Suppression_logique("123", "monFichier.txt");
 
     // Fermer le fichier
     fermer(f);
